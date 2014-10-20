@@ -1,0 +1,14 @@
+extends layout
+
+block content
+	.container
+		h1 Applicants
+		ul#applications.list-unstyled
+			li
+				for applicant in applicants
+					h2= applicant.name
+					p= applicant.bio
+					strong= applicant.skills
+					p= applicant.yearsofexperience
+					em= whywork
+					a(href="/delete/#{applicant._id}") Delete
