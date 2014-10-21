@@ -1,9 +1,11 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
 
-// Require your applicant Schema model
-var Applicant = require('./models/applicants.js');
+	// Require mongoose
+	var mongoose = require('mongoose');
+
+	// Require the controller
+	var indexController = require('./controllers/index.js');
 
 var app = express();
 app.set('view engine', 'jade');
@@ -11,54 +13,25 @@ app.set('views', __dirname + '/views');
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser());
 
-mongoose.connect('mongodb://localhost/amazon');
+	// Connect to your company's database, amazon
+	mongoose.connect('mongodb://localhost/amazon');
 
-app.get('/', function(req, res) {
-	res.render('index');
-});
+app.get('/', indexController.index);
 
 // When you view the applicants webpage, view a list of all the applicants
-app.get('/applicants', function(req, res){
-	Applicant.find({}, function(err, results){
-		res.render('applicants', {
-			applicants: results
-		});
-	});
-});
+app.get('/applicants', indexController.applicants);
 
-// creates an applicant
-app.post('/applicant', function(req, res){
-	// Here is where you need to get the data
-	// from the post body and store it in the database
+// form route - this creates an applicant using the data entered into your form
+app.post('/applicant', indexController.applicant);
 
-	var formData = req.body;
-	// res.redirect('success');
+// show success page after form submission
+app.get('/success', indexController.success);
 
-	// Use the submitted data to create a new Drug instance
-	var prospect = new Applicant(formData);
+// delete an applicant by ID
+app.get('/delete/:id', indexController.deleteIt);
 
-	// Save and THEN perform this function
-	prospect.save(function(err, result) {
-		res.redirect('/success');
-	});
-});
-
-app.get('/success', function(req, res) {
-	res.render('success');
-});
-
-// Delete an applicant by ID
-app.get('/delete/:id', function(req, res) {
-	var applicantId = req.params.id;
-	console.log(applicantId);
-
-	Applicant.remove({_id: applicantId}, function(err, result) {
-		res.redirect('/applicants');
-	});
-});
-
-// Render a submitted job application
-
+// render an applicant's submitted application, using their ID as the page route
+app.get('/:id', indexController.getId);
 
 var server = app.listen(8441, function() {
 	console.log('Express server listening on port ' + server.address().port);

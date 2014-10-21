@@ -6,7 +6,8 @@ block content
 		ul#applications.list-unstyled
 			li
 				for applicant in applicants
-					h2= applicant.name
+					a(href="/#{applicant._id}")
+						h2= applicant.name
 					p= applicant.bio
 					strong= applicant.skills
 					p= applicant.yearsofexperience
